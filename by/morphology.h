@@ -16,6 +16,7 @@ class Words
     private:
         char character;
         string token;
+        char * input; 
     public:                
         Word* LexAnalyze();
         void GetChar();

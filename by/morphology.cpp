@@ -26,7 +26,7 @@
 #define COM 23
 #define SEM 24
 -------------------------------------------
-Words::Word* LexAnalyze()
+Word* Words::LexAnalyze()
 {
     token = "";
     GetChar();
@@ -60,20 +60,20 @@ Words::Word* LexAnalyze()
         case'x':
         case'y':
         case'z':
-            while(letter() || digit())
+            while(Letter() || Digit())
             {
-                concat();
-                getchar();
+                Concat();
+                GetChar();
             }
-            retract();
-            int num = reserve();
+            Retract();
+            int num = Reserve();
             if (num != 0)
             {
                 return CreateWord(num,0);
             }
             else
             {
-                int val = symbol();
+                int val = Symbol();
                 return CreateWord(SYMBOL,val);
             }
             break;
@@ -87,27 +87,127 @@ Words::Word* LexAnalyze()
         case'7':
         case'8':
         case'9':
-            while(digit())
+            while(Digit())
             {
-                concat();
+                Concat();
                 GetChar();
             }
             restract();
-            int val = constant();
+            int val = Constant();
             return CreateWord(CONSTANT,val);
             break ;
         case'<':
-            getchar();
+            GetChar();
             if(character = '=')
                 return CreateWord(LE,0);
-
+            else
+            {
+                Retract();
+                return CreateWord(L,0);
+            }
+            break;
+        case'>':
+            GetChar();
+            if(character == '=')
+                return CreateWord(GE,0);
+            else
+            {
+                Retract();
+                return CreateWord(G,0);
+            }
+            break;
+        case'=':
+            GetChar();
+            if(character == '=')
+                return CreateWord(E,0);
+            else
+            {
+                Retract();
+                return CreateWord(ASSIGN,0);
+            }
+            break;
+        case'!':
+            GetChar();
+            if(character == '=')
+                return CreateWord(NE,0);
+            else
+                Error();
+            break;
+        case'+':
+            return CreateWord(ADD,0);
+            break;
+        case'-':
+            return CreateWord(SUB,0);
+            break;
+        case'*':
+            return CreateWord(MUL,0);
+            break;
+        case'/':
+            return CreateWord(DIV,0);
+            break;
+        case'(':
+            return CreateWord(LPAR,0);
+            break;
+        case')':
+            return CreateWord(RPAR,0);
+            break;
+        case',':
+            return CreateWord(COM,0);
+            break;
+        case';':
+            return CreateWord(SEM,0);
+            break;
+        default:
+            Error();
+            break;          
     }
-
 }
 
 
-Word* CreateWord(int num,int val)
+Word* Words::CreateWord(int num,int val)
 {
     Word * word = new Word(num,val);
     return word;
 }
+
+void Words::GetChar()
+{
+    input ++;
+    character = *input;
+}
+
+void Words::Getnbc()
+{
+    while (character != ' ')
+    {
+        getchar();
+    }
+}
+
+void Words::Concat()
+{
+    token += character;
+}
+
+bool Words::Letter()
+{
+    if (character>=97 && character <=122)
+        return true;
+    else
+        return false;
+}
+
+bool Words::Digit()
+{
+    if (character>=30 && character<=39)
+        return true;
+    else
+        return false;
+}
+
+void Words::Retract()
+{
+    character = ' ';
+}
+
+
