@@ -1,6 +1,8 @@
 #include "morphology.h"
-#include "string"
---------------------------------------------
+#include <string>
+#include <map>
+#include <stdio.h>
+//--------------------------------------------
 #define BEGIN 1
 #define END 2
 #define INT 3
@@ -24,7 +26,10 @@
 #define LPAR 21
 #define RPAR 22
 #define SEM 23
--------------------------------------------
+//-------------------------------------------
+using std::string;
+using std::map;
+//-------------------------------------------
 Word* Words::LexAnalyze()
 {
     token = "";
@@ -33,32 +38,32 @@ Word* Words::LexAnalyze()
 
     switch(character)
     {
-        case'a':
-        case'b':
-        case'c':
-        case'd':
-        case'e':
-        case'f':
-        case'g':
-        case'h':
-        case'i':
-        case'j':
-        case'k':
-        case'l':
-        case'm':
-        case'n':
-        case'o':
-        case'p':
-        case'q':
-        case'r':
-        case's':
-        case't':
-        case'u':
-        case'v':
-        case'w':
-        case'x':
-        case'y':
-        case'z':
+        case 'a' :
+        case 'b' :
+        case 'c' :
+        case 'd' :
+        case 'e' :
+        case 'f' :
+        case 'g' :
+        case 'h' :
+        case 'i' :
+        case 'j' :
+        case 'k' :
+        case 'l' :
+        case 'm' :
+        case 'n' :
+        case 'o' :
+        case 'p' :
+        case 'q' :
+        case 'r' :
+        case 's' :
+        case 't' :
+        case 'u' :
+        case 'v' :
+        case 'w' :
+        case 'x' :
+        case 'y' :
+        case 'z' :
             while(Letter() || Digit())
             {
                 Concat();
@@ -76,16 +81,16 @@ Word* Words::LexAnalyze()
                 return CreateWord(SYMBOL,val);
             }
             break;
-        case'0':
-        case'1':
-        case'2':
-        case'3':
-        case'4':
-        case'5':
-        case'6':
-        case'7':
-        case'8':
-        case'9':
+        case '0' :
+        case '1' :
+        case '2' :
+        case '3' :
+        case '4' :
+        case '5' :
+        case '6' :
+        case '7' :
+        case '8' :
+        case '9' :
             while(Digit())
             {
                 Concat();
@@ -95,7 +100,7 @@ Word* Words::LexAnalyze()
             int val = Constant();
             return CreateWord(CONSTANT,val);
             break ;
-        case'<':
+        case '<' :
             GetChar();
             if(character = '=')
                 return CreateWord(LE,0);
@@ -107,7 +112,7 @@ Word* Words::LexAnalyze()
                 return CreateWord(L,0);
             }
             break;
-        case'>':
+        case '>' :
             GetChar();
             if(character == '=')
                 return CreateWord(GE,0);
@@ -117,35 +122,36 @@ Word* Words::LexAnalyze()
                 return CreateWord(G,0);
             }
             break;
-        case'=':
+        case '=' :
             return CreateWord(E,0);
             break;
-        case'-':
+        case '-' :
             return CreateWord(SUB,0);
             break;
-        case'*':
+        case '*' :
             return CreateWord(MUL,0);
             break;
-        case'(':
+        case '(' :
             return CreateWord(LPAR,0);
             break;
-        case')':
+        case ')' :
             return CreateWord(RPAR,0);
             break;
-        case';':
+        case ';' :
             return CreateWord(SEM,0);
             break;
-        case':':
+        case ':' :
             GetChar();
             if(character == '=')
                 return CreateWord(ASSIGN,0);
             else
-                Error();
+            Error();
             break;
-        default:
+        default :
             Error();
             break;          
     }
+    return NULL;
 }
 
 
@@ -198,7 +204,55 @@ void Words::Retract()
 
 int Words::Reserve()
 {
-    
+    map<string,int>::iterator iter;
+    iter = reserveMap.find(token);
+    if(iter == reserveMap.end())
+        return 0;
+    else
+        return iter->second;
 }
 
+void Words::InitReserveMap()
+{
+    reserveMap["begin"] = 1;
+    reserveMap["end"] = 2;
+    reserveMap["integer"] = 3;
+    reserveMap["if"] = 4;
+    reserveMap["then"] = 5;
+    reserveMap["else"] = 6;
+    reserveMap["function"] = 7;
+    reserveMap["read"] = 8;
+    reserveMap["write"] = 9;
+}
 
+int Words::Symbol()
+{
+    map<string,int>::iterator iter;
+    iter = symbolMap.find(token);
+    if(iter == symbolMap.end())
+    { 
+        symbolMap[token] = symbolMap.size()+1;
+        return symbolMap.size();
+    }
+    else
+        return iter->second;
+}
+
+int Words::Constant()
+{
+        
+    map<string,int>::iterator iter;
+    iter = constantMap.find(token);
+    if(iter == constantMap.end())
+    { 
+        constantMap[token] = constantMap.size()+1;
+        return constantMap.size();
+    }
+    else
+        return iter->second;
+}
+
+void Words::Error()
+{
+    printf("Error happened with token %s",token);    
+}

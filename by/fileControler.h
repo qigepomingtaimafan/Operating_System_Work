@@ -1,13 +1,12 @@
-#include <iostream>
-#include <fstream>
 #include <string>
-
+#include <stdio.h>
+---------------------------------------------------------
 class FileControler
 {
     private:
         static FileControler* fileControler;
-        ifstream inFile;
-        ofstream outFile;
+        FILE* inFile;
+        FILE* outFile;
     protected:
         FileControler (const string inputFilePath,const string outputFilePath);
         FileControler () {};
