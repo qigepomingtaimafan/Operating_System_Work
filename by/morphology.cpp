@@ -1,30 +1,29 @@
 #include "morphology.h"
 #include "string"
 --------------------------------------------
-#define SYMBOL 1
-#define CONSTANT 2
+#define BEGIN 1
+#define END 2
 #define INT 3
 #define IF 4
 #define ELSE 5
-#define WHILE 6
-#define FOR 7
+#define ELSE 6
+#define FUNCTION 7
 #define READ 8
 #define WRITE 9
-#define ADD 10
-#define SUB 11
-#define MUL 12
-#define DIV 13
-#define L 14
-#define LE 15
-#define G 16
-#define GE 17
-#define NE 18
-#define E 19
+#define SYMBOL 10
+#define CONSTANT 11
+#define E 12
+#define NE 13
+#define LE 14
+#define L 15
+#define GE 16
+#define G 17
+#define SUB 18
+#define MUL 19
 #define ASSIGN 20
 #define LPAR 21
 #define RPAR 22
-#define COM 23
-#define SEM 24
+#define SEM 23
 -------------------------------------------
 Word* Words::LexAnalyze()
 {
@@ -100,7 +99,9 @@ Word* Words::LexAnalyze()
             GetChar();
             if(character = '=')
                 return CreateWord(LE,0);
-            else
+            else if (character = '>')
+                return CreateWord(NE,0);
+            else 
             {
                 Retract();
                 return CreateWord(L,0);
@@ -117,24 +118,7 @@ Word* Words::LexAnalyze()
             }
             break;
         case'=':
-            GetChar();
-            if(character == '=')
-                return CreateWord(E,0);
-            else
-            {
-                Retract();
-                return CreateWord(ASSIGN,0);
-            }
-            break;
-        case'!':
-            GetChar();
-            if(character == '=')
-                return CreateWord(NE,0);
-            else
-                Error();
-            break;
-        case'+':
-            return CreateWord(ADD,0);
+            return CreateWord(E,0);
             break;
         case'-':
             return CreateWord(SUB,0);
@@ -142,20 +126,21 @@ Word* Words::LexAnalyze()
         case'*':
             return CreateWord(MUL,0);
             break;
-        case'/':
-            return CreateWord(DIV,0);
-            break;
         case'(':
             return CreateWord(LPAR,0);
             break;
         case')':
             return CreateWord(RPAR,0);
             break;
-        case',':
-            return CreateWord(COM,0);
-            break;
         case';':
             return CreateWord(SEM,0);
+            break;
+        case':':
+            GetChar();
+            if(character == '=')
+                return CreateWord(ASSIGN,0);
+            else
+                Error();
             break;
         default:
             Error();
@@ -208,6 +193,12 @@ bool Words::Digit()
 void Words::Retract()
 {
     character = ' ';
+    input --;
+}
+
+int Words::Reserve()
+{
+    
 }
 
 
