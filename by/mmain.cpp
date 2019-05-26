@@ -15,7 +15,7 @@ int main()
 {
     ifstream in("a.pas",std::ios::in);
     ofstream out("a.dvd",std::ios::out);
-    Words words;
+    Words *words= new Words();
     string temp;
     if(!in.is_open() || !out.is_open())
         printf("The a.pas is not exist or can not open a.dvd\n");
@@ -26,36 +26,34 @@ int main()
         int lineNum = 1;
         while(getline(in,temp))
         {   
-            //s += temp;
-        //}
-        words.SetInput(temp);
-        words.SetLineNum(lineNum);
-        //words.SetInput(s);
-        while (1)
-        {
-            Word *word = words.LexAnalyze();
-            if(word == NULL)
-                break;
-            else
+            words->SetInput(temp);
+            words->SetLineNum(lineNum);
+            while (1)
             {
-                if(word->GetVal() == 99 && word->GetNum() ==99)
+                Word *word = words->LexAnalyze();
+                if(word == NULL)
                     break;
-                out<<"("<<word->GetNum()<<",";
-                if(word->GetVal() == 0)
-                    out<<"-)"<<endl;
                 else
-                    out<<word->GetVal()<<")"<<endl;
-                delete(word);
+                {
+                    if(word->GetVal() == 99 && word->GetNum() ==99)
+                        break;
+                    out<<"("<<word->GetNum()<<",";
+                    if(word->GetVal() == 0)
+                        out<<"-)"<<endl;
+                    else
+                        out<<word->GetVal()<<")"<<endl;
+                    delete(word);
+                }
             }
-        }
-        lineNum++;
+            lineNum++;
         }
         in.close();
         out.close();
-        if(words.IsComplete())
+        if(words->IsComplete())
             printf("--------------------------------------\ncomplete\n");
         else
             printf("--------------------------------------\nPlease check the error uppon\n");
     }
+    delete (words);
     return 0;
 }

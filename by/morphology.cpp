@@ -184,6 +184,7 @@ Word* Words::LexAnalyze()
                 token += ":";
                 token += character;
                 Error(2);
+                return CreateWord(99,99);
             }
             break;
         }
@@ -192,6 +193,7 @@ Word* Words::LexAnalyze()
             break;
         default :
             Error(1);
+            CreateWord(99,99);
             break;          
     }
     return NULL;
