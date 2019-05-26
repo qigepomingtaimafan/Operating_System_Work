@@ -7,7 +7,7 @@
 #define END 2
 #define INT 3
 #define IF 4
-#define ELSE 5
+#define THEN 5
 #define ELSE 6
 #define FUNCTION 7
 #define READ 8
@@ -34,7 +34,7 @@ Word* Words::LexAnalyze()
 {
     token = "";
     GetChar();
-    GetNbc();
+    Getnbc();
 
     switch(character)
     {
@@ -64,6 +64,33 @@ Word* Words::LexAnalyze()
         case 'x' :
         case 'y' :
         case 'z' :
+        case 'A' :
+        case 'B' :
+        case 'C' :
+        case 'D' :
+        case 'E' :
+        case 'F' :
+        case 'G' :
+        case 'H' :
+        case 'I' :
+        case 'J' :
+        case 'K' :
+        case 'L':
+        case 'M' :
+        case 'N' :
+        case 'O' :
+        case 'P' :
+        case 'Q' :
+        case 'R' :
+        case 'S' :
+        case 'T' :
+        case 'U' :
+        case 'V' :
+        case 'W' :
+        case 'X' :
+        case 'Y' :
+        case 'Z' :
+        {
             while(Letter() || Digit())
             {
                 Concat();
@@ -81,6 +108,7 @@ Word* Words::LexAnalyze()
                 return CreateWord(SYMBOL,val);
             }
             break;
+        }
         case '0' :
         case '1' :
         case '2' :
@@ -91,20 +119,23 @@ Word* Words::LexAnalyze()
         case '7' :
         case '8' :
         case '9' :
+        {
             while(Digit())
             {
                 Concat();
                 GetChar();
             }
-            restract();
+            Retract();
             int val = Constant();
             return CreateWord(CONSTANT,val);
             break ;
+        }
         case '<' :
+        {
             GetChar();
-            if(character = '=')
+            if(character == '=')
                 return CreateWord(LE,0);
-            else if (character = '>')
+            else if (character == '>')
                 return CreateWord(NE,0);
             else 
             {
@@ -112,7 +143,9 @@ Word* Words::LexAnalyze()
                 return CreateWord(L,0);
             }
             break;
+        }
         case '>' :
+        {
             GetChar();
             if(character == '=')
                 return CreateWord(GE,0);
@@ -122,6 +155,7 @@ Word* Words::LexAnalyze()
                 return CreateWord(G,0);
             }
             break;
+        }
         case '=' :
             return CreateWord(E,0);
             break;
@@ -141,14 +175,23 @@ Word* Words::LexAnalyze()
             return CreateWord(SEM,0);
             break;
         case ':' :
+        {
             GetChar();
             if(character == '=')
                 return CreateWord(ASSIGN,0);
             else
-            Error();
+            {
+                token += ":";
+                token += character;
+                Error(2);
+            }
+            break;
+        }
+        case '\000':
+            return CreateWord(99,99);
             break;
         default :
-            Error();
+            Error(1);
             break;          
     }
     return NULL;
@@ -163,15 +206,15 @@ Word* Words::CreateWord(int num,int val)
 
 void Words::GetChar()
 {
-    input ++;
     character = *input;
+    input++;
 }
 
 void Words::Getnbc()
 {
-    while (character != ' ')
+    while (character == ' ')
     {
-        getchar();
+        GetChar();
     }
 }
 
@@ -182,7 +225,7 @@ void Words::Concat()
 
 bool Words::Letter()
 {
-    if (character>=97 && character <=122)
+    if ((character>=97 && character <=122)||(character>=65 && character<=90))
         return true;
     else
         return false;
@@ -190,7 +233,7 @@ bool Words::Letter()
 
 bool Words::Digit()
 {
-    if (character>=30 && character<=39)
+    if (character>=48 && character<=57)
         return true;
     else
         return false;
@@ -252,7 +295,15 @@ int Words::Constant()
         return iter->second;
 }
 
-void Words::Error()
+void Words::Error(int kind)
 {
-    printf("Error happened with token %s",token);    
+    complete = false;
+    printf("--------------------------------------\n");
+    printf("Error happened in line %d\n",lineNum);   
+    switch(kind)
+    {
+       case 1:printf("There is illegal character : \"%c\"\n",character); break;
+       case 2:printf("Illegal symbol \"%s\"\n",token.c_str());break;
+    }
 }
+

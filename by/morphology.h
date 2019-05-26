@@ -12,8 +12,8 @@ class Word
         int val;
     public:
         Word(int num,int val){this->num = num;this->val = val;}
-        int getNum(){return num;}
-        int getval(){return val;}
+        int GetNum(){return num;}
+        int GetVal(){return val;}
 };
 
 class Words
@@ -21,11 +21,14 @@ class Words
     private:
         char character;
         string token;
-        char * input; 
+        int lineNum;
+        string::iterator input; 
         map<string,int> reserveMap;
         map<string,int> symbolMap;
         map<string,int> constantMap;
+        bool complete;
     public:                
+        Words(){InitReserveMap();complete = true;}
         Word* LexAnalyze();
         void GetChar();
         void Getnbc();
@@ -36,10 +39,12 @@ class Words
         int Symbol();
         int Reserve();
         int Constant();
-        void Error();
+        void Error(int kind);
         Word* CreateWord(int num,int val);
         void InitReserveMap();
-        void SetInput(const string s){input = &s[0];}
+        void SetInput(string &s){input = s.begin();}
+        void SetLineNum(int lineNum){this->lineNum = lineNum;}
+        bool IsComplete(){return complete;}
 };
 
 
