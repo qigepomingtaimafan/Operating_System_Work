@@ -14,7 +14,7 @@ using std::ofstream;
 int main()
 {
     ifstream in("a.pas",std::ios::in);
-    ofstream out("a.dvd",std::ios::out);
+    ofstream out("a.dyd",std::ios::out);
     Words *words= new Words();
     string temp;
     if(!in.is_open() || !out.is_open() || !words->SetErr("a.err"))
