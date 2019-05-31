@@ -9,7 +9,7 @@ BEGIN	morphology.cpp	6;"	d	file:
 CONSTANT	morphology.cpp	16;"	d	file:
 Concat	morphology.cpp	/^void Words::Concat()$/;"	f	class:Words
 Constant	morphology.cpp	/^int Words::Constant()$/;"	f	class:Words
-CreateWord	morphology.cpp	/^Word* Words::CreateWord(int num,int val)$/;"	f	class:Words
+CreateWord	morphology.cpp	/^Word* Words::CreateWord(int val,string s)$/;"	f	class:Words
 Digit	morphology.cpp	/^bool Words::Digit()$/;"	f	class:Words
 E	morphology.cpp	17;"	d	file:
 ELSE	morphology.cpp	11;"	d	file:
@@ -17,13 +17,10 @@ END	morphology.cpp	7;"	d	file:
 Error	morphology.cpp	/^void Words::Error(int kind)$/;"	f	class:Words
 F	a.pas	/^  integer function F(n);$/;"	f
 FUNCTION	morphology.cpp	12;"	d	file:
-FileControler	fileControler.cpp	/^FileControler::FileControler(const string inputFilePath,const string outputFilePath)$/;"	f	class:FileControler
-FileControler	fileControler.h	/^        FileControler () {};$/;"	f	class:FileControler
-FileControler	fileControler.h	/^class FileControler$/;"	c
 G	morphology.cpp	22;"	d	file:
 GE	morphology.cpp	21;"	d	file:
 GetChar	morphology.cpp	/^void Words::GetChar()$/;"	f	class:Words
-GetNum	morphology.h	/^        int GetNum(){return num;}$/;"	f	class:Word
+GetS	morphology.h	/^        string GetS(){return s;}$/;"	f	class:Word
 GetVal	morphology.h	/^        int GetVal(){return val;}$/;"	f	class:Word
 Getnbc	morphology.cpp	/^void Words::Getnbc()$/;"	f	class:Words
 IF	morphology.cpp	9;"	d	file:
@@ -45,30 +42,25 @@ Retract	morphology.cpp	/^void Words::Retract()$/;"	f	class:Words
 SEM	morphology.cpp	28;"	d	file:
 SUB	morphology.cpp	23;"	d	file:
 SYMBOL	morphology.cpp	15;"	d	file:
+SetErr	morphology.cpp	/^bool Words::SetErr(string errS)$/;"	f	class:Words
 SetInput	morphology.h	/^        void SetInput(string &s){input = s.begin();}$/;"	f	class:Words
-SetInputFilePath	fileControler.cpp	/^void FileControler::SetInputFilePath(const string inputFilePath)$/;"	f	class:FileControler
 SetLineNum	morphology.h	/^        void SetLineNum(int lineNum){this->lineNum = lineNum;}$/;"	f	class:Words
-SetOutputFilePath	fileControler.cpp	/^void FileControler::SetOutputFilePath(const string outputFilePath)$/;"	f	class:FileControler
 Symbol	morphology.cpp	/^int Words::Symbol()$/;"	f	class:Words
 THEN	morphology.cpp	10;"	d	file:
 WRITE	morphology.cpp	14;"	d	file:
-Word	morphology.h	/^        Word(int num,int val){this->num = num;this->val = val;}$/;"	f	class:Word
+Word	morphology.h	/^        Word(int val,string s){this->s = s;this->val = val;}$/;"	f	class:Word
 Word	morphology.h	/^class Word$/;"	c
 Words	morphology.h	/^        Words(){InitReserveMap();complete = true;}$/;"	f	class:Words
 Words	morphology.h	/^class Words$/;"	c
 character	morphology.h	/^        char character;$/;"	m	class:Words
 complete	morphology.h	/^        bool complete;$/;"	m	class:Words
 constantMap	morphology.h	/^        map<string,int> constantMap;$/;"	m	class:Words
-fileControler	fileControler.h	/^        static FileControler* fileControler;$/;"	m	class:FileControler
-getFileControler	fileControler.h	/^        static FileControler* getFileControler () {return fileControler;}$/;"	f	class:FileControler
-inFile	fileControler.h	/^        FILE* inFile;$/;"	m	class:FileControler
+err	morphology.h	/^        ofstream err;$/;"	m	class:Words
 input	morphology.h	/^        string::iterator input; $/;"	m	class:Words
 lineNum	morphology.h	/^        int lineNum;$/;"	m	class:Words
-main	main.cpp	/^int main()$/;"	f
 main	mmain.cpp	/^int main()$/;"	f
-num	morphology.h	/^        int num;$/;"	m	class:Word
-outFile	fileControler.h	/^        FILE* outFile;$/;"	m	class:FileControler
 reserveMap	morphology.h	/^        map<string,int> reserveMap;$/;"	m	class:Words
+s	morphology.h	/^        string  s;$/;"	m	class:Word
 symbolMap	morphology.h	/^        map<string,int> symbolMap;$/;"	m	class:Words
 token	morphology.h	/^        string token;$/;"	m	class:Words
 val	morphology.h	/^        int val;$/;"	m	class:Word
