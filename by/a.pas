@@ -10,5 +10,3 @@ begin
   k:=F(m);
   write(k)
 end
-
-

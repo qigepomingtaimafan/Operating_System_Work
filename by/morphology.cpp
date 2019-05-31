@@ -29,6 +29,7 @@
 //-------------------------------------------
 using std::string;
 using std::map;
+using std::endl;
 //-------------------------------------------
 Word* Words::LexAnalyze()
 {
@@ -75,7 +76,7 @@ Word* Words::LexAnalyze()
         case 'I' :
         case 'J' :
         case 'K' :
-        case 'L':
+        case 'L' :
         case 'M' :
         case 'N' :
         case 'O' :
@@ -100,12 +101,12 @@ Word* Words::LexAnalyze()
             int num = Reserve();
             if (num != 0)
             {
-                return CreateWord(num,0);
+                return CreateWord(num,token);
             }
             else
             {
                 int val = Symbol();
-                return CreateWord(SYMBOL,val);
+                return CreateWord(SYMBOL,token);
             }
             break;
         }
@@ -127,20 +128,20 @@ Word* Words::LexAnalyze()
             }
             Retract();
             int val = Constant();
-            return CreateWord(CONSTANT,val);
+            return CreateWord(CONSTANT,token);
             break ;
         }
         case '<' :
         {
             GetChar();
             if(character == '=')
-                return CreateWord(LE,0);
+                return CreateWord(LE,"<=");
             else if (character == '>')
-                return CreateWord(NE,0);
+                return CreateWord(NE,"<>");
             else 
             {
                 Retract();
-                return CreateWord(L,0);
+                return CreateWord(L,"<");
             }
             break;
         }
@@ -148,61 +149,61 @@ Word* Words::LexAnalyze()
         {
             GetChar();
             if(character == '=')
-                return CreateWord(GE,0);
+                return CreateWord(GE,">=");
             else
             {
                 Retract();
-                return CreateWord(G,0);
+                return CreateWord(G,">");
             }
             break;
         }
         case '=' :
-            return CreateWord(E,0);
+            return CreateWord(E,"=");
             break;
         case '-' :
-            return CreateWord(SUB,0);
+            return CreateWord(SUB,"-");
             break;
         case '*' :
-            return CreateWord(MUL,0);
+            return CreateWord(MUL,"*");
             break;
         case '(' :
-            return CreateWord(LPAR,0);
+            return CreateWord(LPAR,"(");
             break;
         case ')' :
-            return CreateWord(RPAR,0);
+            return CreateWord(RPAR,")");
             break;
         case ';' :
-            return CreateWord(SEM,0);
+            return CreateWord(SEM,";");
             break;
         case ':' :
         {
             GetChar();
             if(character == '=')
-                return CreateWord(ASSIGN,0);
+                return CreateWord(ASSIGN,":=");
             else
             {
                 token += ":";
                 token += character;
                 Error(2);
-                return CreateWord(99,99);
+                return CreateWord(99,"Error");
             }
             break;
         }
         case '\000':
-            return CreateWord(99,99);
+            return CreateWord(99,"Error");
             break;
         default :
             Error(1);
-            CreateWord(99,99);
+            CreateWord(99,"Error");
             break;          
     }
     return NULL;
 }
 
 
-Word* Words::CreateWord(int num,int val)
+Word* Words::CreateWord(int val,string s)
 {
-    Word * word = new Word(num,val);
+    Word * word = new Word(val,s);
     return word;
 }
 
@@ -304,8 +305,23 @@ void Words::Error(int kind)
     printf("Error happened in line %d\n",lineNum);   
     switch(kind)
     {
-       case 1:printf("There is illegal character : \"%c\"\n",character); break;
-       case 2:printf("Illegal symbol \"%s\"\n",token.c_str());break;
+       case 1:
+             {
+                printf("There is illegal character : \"%c\"\n",character); 
+                err<<"*** LINE:"<<lineNum<<" There is illegal character : "<<"\""<<character<<"\""<<endl;
+                break;
+             }
+       case 2:
+             {
+                printf("Illegal symbol \"%s\"\n",token.c_str());
+                err<<"*** LINE:"<<lineNum<<" Illegal symbol : "<<"\""<<token<<"\""<<endl;
+                break;
+             }
     }
 }
 
+bool Words::SetErr(string errS)
+{
+    err.open(errS,std::ios::out);
+    return err.is_open();
+}

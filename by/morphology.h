@@ -1,18 +1,20 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <map>
 //-----------------------------------------
 using std::string;
 using std::map;
+using std::ofstream;
 //-----------------------------------------
 class Word
 {
     private:
-        int num;
+        string  s;
         int val;
     public:
-        Word(int num,int val){this->num = num;this->val = val;}
-        int GetNum(){return num;}
+        Word(int val,string s){this->s = s;this->val = val;}
+        string GetS(){return s;}
         int GetVal(){return val;}
 };
 
@@ -27,6 +29,7 @@ class Words
         map<string,int> symbolMap;
         map<string,int> constantMap;
         bool complete;
+        ofstream err;
     public:                
         Words(){InitReserveMap();complete = true;}
         Word* LexAnalyze();
@@ -40,11 +43,12 @@ class Words
         int Reserve();
         int Constant();
         void Error(int kind);
-        Word* CreateWord(int num,int val);
+        Word* CreateWord(int val,string s);
         void InitReserveMap();
         void SetInput(string &s){input = s.begin();}
         void SetLineNum(int lineNum){this->lineNum = lineNum;}
         bool IsComplete(){return complete;}
+        bool SetErr(string errS);
 };
 
 

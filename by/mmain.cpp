@@ -17,8 +17,8 @@ int main()
     ofstream out("a.dvd",std::ios::out);
     Words *words= new Words();
     string temp;
-    if(!in.is_open() || !out.is_open())
-        printf("The a.pas is not exist or can not open a.dvd\n");
+    if(!in.is_open() || !out.is_open() || !words->SetErr("a.err"))
+        printf("The a.pas is not exist or can not write a.dvd or can not write a.err\n");
     else
     {
         string temp;
@@ -35,18 +35,22 @@ int main()
                     break;
                 else
                 {
-                    if(word->GetVal() == 99 && word->GetNum() ==99)
+                    if(word->GetVal() == 99 && word->GetS() =="Error")
                         break;
-                    out<<"("<<word->GetNum()<<",";
-                    if(word->GetVal() == 0)
-                        out<<"-)"<<endl;
-                    else
-                        out<<word->GetVal()<<")"<<endl;
+                    out.setf(std::ios::right);
+                    out.width(16);
+                    out<<word->GetS()<<" "<<word->GetVal()<<endl;
                     delete(word);
                 }
             }
+            out.setf(std::ios::right);
+            out.width(16);
+            out<<"EOLN"<<" "<<"24"<<endl;
             lineNum++;
         }
+        out.setf(std::ios::right);
+        out.width(16);
+        out<<"EOF"<<" "<<"25"<<endl;
         in.close();
         out.close();
         if(words->IsComplete())
