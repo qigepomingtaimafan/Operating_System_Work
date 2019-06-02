@@ -1,8 +1,9 @@
-#include<iostream>
-#include<process.h>
-#include<string>
+#include "process.h"
+#include <string>
+#include <list>
 //------------------------------
 using std::string;
+using std::list;
 //------------------------------
 typedef ResourceControlBlock RCB;
 //------------------------------
@@ -11,5 +12,8 @@ class ResourceControlBlock
     private:
         int RID;
         int status;
-        PCB* waitingList;
+        list<PCB*> waitingList;
+    public:
+        ResourceControlBlock(int n,int i){status = n;RID = i;}
+        void DeleteProcess(int PID);
 }

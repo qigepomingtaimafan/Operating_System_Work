@@ -1,8 +1,11 @@
-#include <iostream>
-#include <resource.h>
-#include<string>
+#include "resource.h"
+#include <string>
+#include <vector>
+#include <list>
 //------------------------------------------
 using std::string;
+using std::vector;
+using std::list;
 //------------------------------------------
 enum ProcessState
 {
@@ -32,19 +35,24 @@ class Process
         void Request();
         void Release();
         void Time_out();
-        void Dispatch();
+        void Dispatch(bool toReady);
 }
+
 class ProcessingControlBlock:public Process
 {
     private:
-        string PID;
+        int PID;
         int cpuState;
         int memory;
         int open_Files;
-        RCB* resources;
+        list<RCB*> resources;
         PS type;
         PCB* list;
         PCB* parent;
-        PCB* children;
+        list<PCB* > children;
         Priority priority;
+    public:
+        ProcessingControlBlock(int PID,Priority priority);
+        void Link(PCB* parent);
+        void KillTree();
 }
