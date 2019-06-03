@@ -5,7 +5,7 @@
 //--------------------------------
 using std::vector;
 //--------------------------------
-static Manager* Manager::getManager()
+Manager* Manager::getManager()
 {
     if(manager == NULL)
     {
@@ -26,8 +26,10 @@ Manager::Manager()
 void Manager::DestroyProcess(int PID)
 {
     vector<PCB*>::iterator iter;
-    for (iter = processes;iter != processed.end();iter++)
+    for (iter = processes.begin();iter != processes.end();iter++)
     {
+        if(*iter == NULL)
+            continue;
         if(*iter->getPID() == PID)
         {
             *iter->KillTree();
@@ -36,3 +38,45 @@ void Manager::DestroyProcess(int PID)
     }
     Scheduler();
 }
+
+RCB* Manager::Get_RCB(int rid)
+{
+    vector<RCB*>::iterator iter;
+    for (iter = resources.begin();iter != resources.end();iter++)
+    {
+        if(*iter == NULL)
+            continue;
+        if(*iter->getRID() == rid)
+        {
+            return *iter;
+        }
+    }
+}
+
+void Manager::CreateProcess(int PID,Priority priority)
+{
+    PCB* pcb = new PCB(PID,priority);
+    pcb->setParent(runningProcess);  
+    runningProcess->setChildren(pcb);
+    switch(priority)
+    {
+        case init:
+        {
+            initList.push_back(pcb);
+            break;
+        }
+        case system:
+        {
+            systemList.push_back(pcb);
+            break;
+        }
+        case user:
+        {
+            userList.push_back(pcb);
+            break;
+        }
+    }
+    Scheduler();
+}
+
+

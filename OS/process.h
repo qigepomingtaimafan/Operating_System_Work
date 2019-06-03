@@ -1,4 +1,5 @@
-#include "resource.h"
+#include "resource.h"i
+#include "manager.h"
 #include <string>
 #include <vector>
 #include <list>
@@ -26,8 +27,6 @@ typedef ProcessingControlBlock PCB;
 //------------------------------------------
 class Process
 {
-    private:
-        PS ps;
     public:
         Process();
         void Create();
@@ -51,8 +50,16 @@ class ProcessingControlBlock:public Process
         PCB* parent;
         list<PCB* > children;
         Priority priority;
+        Manager* manager;
     public:
         ProcessingControlBlock(int PID,Priority priority);
         void Link(PCB* parent);
         void KillTree();
+        void Request(int rid);
+        void Request(int rid,int n);
+        void setManager(Manager* manager){this->manager = manager;}
+        Manager* getManager(){return manager;}
+        PCB* getParent(){return parent;}
+        void setParent(PCB* parent){this->parent = parent;}
+        void setChildren(PCB* children){this->children.push_back(children);}
 }

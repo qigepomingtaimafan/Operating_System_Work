@@ -1,46 +1,48 @@
-#include<process.h>
-#include<string>
+#include "process.h"
+#include <string>
+#include <list>
 //-----------------------------------
 using std::string;
+using std::list;
 //-----------------------------------
 Process::Process()
 {
-    ps = none;
+    type = none;
 }
 
 void Process::Create()
 {
-    ps = ready;
+    type = ready;
 }
 
 void Process::destroy()
 {
-    ps = none;
+    type = none;
 }
 
 void Process::Request()
 {
-    ps = blocked;
+    type = blocked;
 }
 
 void Process::Release()
 {
-    ps = ready;
+    type = ready;
 }
 
 void Process::Time_out()
 {
-    ps = ready;
+    type = ready;
 }
 void Process::Dispatch(bool toReady)
 {
     if (toReady)
     {
-        ps = ready;
+        type = ready;
     }
     else
     {
-        ps = running;
+        type = running;
     }
 }
 
@@ -48,7 +50,7 @@ ProcessingControlBlock::ProcessingControlBlock(int PID,Priority priority)
 {
     this->PID = PID;
     this->priority = priority;
-    this->ps = none;
+    this->type = none;
 }
 
 void Process::KillTree()
@@ -65,4 +67,21 @@ void Process::KillTree()
     {
         *iter->DeleteProcess(this->PID);
     }
+}
+
+void ProcessingControlBlock::Request(int rid)
+{
+    RCB* r = getManager()->Get_RCB(rid);
+    if (r->Status == 1)
+    {
+        r->Status = 0;
+        resources.push_back(this);
+    }
+    else
+    {
+        type = blocked;
+        list.push_back(r);
+        getManager()->RemoveProcess(priority,this);                
+    }
+
 }
