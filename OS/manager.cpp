@@ -79,4 +79,36 @@ void Manager::CreateProcess(int PID,Priority priority)
     Scheduler();
 }
 
-
+void Manager::RemoveProcess(Priority priority,PCB* pcb)
+{
+    list<PCB*> & l;
+    switch(priority)
+    {
+        case init:
+        {
+            l = initList;
+            break;
+        }
+        case system:
+        {
+            l = systemList;
+            break;
+        }
+        case user:
+        {
+            l = userList;
+            break;
+        }
+    }
+    list<PCB*>::iterator iter;
+    for (iter = l.begin();iter != l.end();iter++)
+    {
+        if (*iter == pcb)
+        {
+            l.erase(iter);
+            return ;
+        }
+    }
+    
+    
+}

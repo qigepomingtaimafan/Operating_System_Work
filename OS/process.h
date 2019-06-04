@@ -3,10 +3,14 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <map>
+#include <pair>
 //------------------------------------------
 using std::string;
 using std::vector;
 using std::list;
+using std::pair;
+using std::map;
 //------------------------------------------
 enum ProcessState
 {
@@ -44,9 +48,9 @@ class ProcessingControlBlock:public Process
         int cpuState;
         int memory;
         int open_Files;
-        list<RCB*> resources;
+        map<RCB*,int> resources;
         PS type;
-        PCB* list;
+        RCB* blockList;
         PCB* parent;
         list<PCB* > children;
         Priority priority;

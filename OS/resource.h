@@ -17,4 +17,7 @@ class ResourceControlBlock
         ResourceControlBlock(int n,int i){status = n;RID = i;}
         void DeleteProcess(int PID);
         int getRID(){return this->RID;}
+        void InsertProcess(PCB* pcb);
+        int getStatus(){return status;}
+        void setStatus(int status){this->status = status;}
 }

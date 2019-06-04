@@ -1,9 +1,11 @@
 #include "process.h"
 #include <string>
 #include <list>
+#include <map>
 //-----------------------------------
 using std::string;
 using std::list;
+using std::map;
 //-----------------------------------
 Process::Process()
 {
@@ -65,23 +67,49 @@ void Process::KillTree()
     list<RCB*>::iterator iter;
     for (iter = resources.begin();iter != resources.end();iter++)
     {
-        *iter->DeleteProcess(this->PID);
+        (*iter.first)->DeleteProcess(this->PID);
     }
 }
 
 void ProcessingControlBlock::Request(int rid)
 {
     RCB* r = getManager()->Get_RCB(rid);
-    if (r->Status == 1)
+    if (r->getStatus() == 1)
     {
-        r->Status = 0;
-        resources.push_back(this);
+        r->setStatus(0);
+        resources[r] = 1;
     }
     else
     {
         type = blocked;
-        list.push_back(r);
-        getManager()->RemoveProcess(priority,this);                
+        blockList = r;
+        getManager()->RemoveProcess(priority,this);
+        r->InsertProcess(this);
+        Scheduler();
     }
 
+}
+
+void ProcessingControlBlock::Request(int rid,int n)
+{
+    RCB* r = getManager()->Get_RCB(rid);
+    if (r->getStatus() >= n)
+    {
+        int m = r->getStatus()-n;
+        r->setStatus(m);
+        resources[r] = n;   
+    }
+    else
+    {
+        if (n > r->getRID())
+        {
+            getManager->Error(1);
+            return;
+        }
+        type = blocked;
+        blockList = r;
+        getManager()->RemoveProcess(priority,this);
+        r->InsertProcess(this);
+        Scheduler();
+    }
 }
