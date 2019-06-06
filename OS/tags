@@ -1,0 +1,75 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+CreateProcess	manager.cpp	/^void Manager::CreateProcess(int PID,Priority priority)$/;"	f	class:Manager
+DeleteProcess	resource.cpp	/^void ResourceControlBlock::DeleteProcess(int PID)$/;"	f	class:ResourceControlBlock
+DestroyProcess	manager.cpp	/^void Manager::DestroyProcess(int PID)$/;"	f	class:Manager
+FetchPCB	manager.cpp	/^PCB* FetchPCB(int pid)$/;"	f
+FetchRCB	manager.cpp	/^RCB* FetchRCB(int rid)$/;"	f
+Get_RCB	manager.cpp	/^RCB* Manager::Get_RCB(int rid)$/;"	f	class:Manager
+InsertProcess	resource.cpp	/^void ResourceControlBlock::InsertProcess(PCB* pcb)$/;"	f	class:ResourceControlBlock
+KillTree	process.cpp	/^void Process::KillTree()$/;"	f	class:Process
+Manager	manager.cpp	/^Manager::Manager()$/;"	f	class:Manager
+Manager	manager.h	/^class Manager$/;"	c
+PCB	process.h	/^typedef ProcessingControlBlock PCB;$/;"	t
+PID	process.h	/^        int PID;$/;"	m	class:ProcessingControlBlock
+PS	process.h	/^typedef ProcessState PS;$/;"	t
+Preempt	process.cpp	/^void PCB::Preempt(PCB* p)$/;"	f	class:PCB
+Priority	process.h	/^enum Priority$/;"	g
+Process	process.h	/^class Process$/;"	c
+ProcessState	process.h	/^enum ProcessState$/;"	g
+ProcessingControlBlock	process.cpp	/^ProcessingControlBlock::ProcessingControlBlock(int PID,Priority priority)$/;"	f	class:ProcessingControlBlock
+ProcessingControlBlock	process.h	/^class ProcessingControlBlock:public Process$/;"	c
+RCB	resource.h	/^typedef ResourceControlBlock RCB;$/;"	t
+RID	resource.h	/^        int RID;$/;"	m	class:ResourceControlBlock
+RL	process.h	/^        list<PCB*> & RL; $/;"	m	class:ProcessingControlBlock
+Release	process.cpp	/^void ProcessingControlBlock::Release(int rid)$/;"	f	class:ProcessingControlBlock
+Release	process.cpp	/^void ProcessingControlBlock::Release(int rid,int n)$/;"	f	class:ProcessingControlBlock
+RemoveProcess	manager.cpp	/^void Manager::RemoveProcess(Priority priority,PCB* pcb)$/;"	f	class:Manager
+Request	process.cpp	/^void ProcessingControlBlock::Request(int rid)$/;"	f	class:ProcessingControlBlock
+Request	process.cpp	/^void ProcessingControlBlock::Request(int rid,int n)$/;"	f	class:ProcessingControlBlock
+ResourceControlBlock	resource.h	/^        ResourceControlBlock(int n,int i){status = n;RID = i; k = n;}$/;"	f	class:ResourceControlBlock
+ResourceControlBlock	resource.h	/^class ResourceControlBlock$/;"	c
+Scheduler	process.cpp	/^void PCB::Scheduler()$/;"	f	class:PCB
+Time_out	process.cpp	/^void PCB::Time_out()$/;"	f	class:PCB
+blockList	process.h	/^        RCB* blockList;$/;"	m	class:ProcessingControlBlock
+blocked	process.h	/^    blocked$/;"	e	enum:ProcessState
+children	process.h	/^        list<PCB* > children;$/;"	m	class:ProcessingControlBlock
+cpuState	process.h	/^        int cpuState;$/;"	m	class:ProcessingControlBlock
+getManager	manager.cpp	/^Manager* Manager::getManager()$/;"	f	class:Manager
+getManager	process.h	/^        Manager* getManager(){return manager;}$/;"	f	class:ProcessingControlBlock
+getParent	process.h	/^        PCB* getParent(){return parent;}$/;"	f	class:ProcessingControlBlock
+getRID	resource.h	/^        int getRID(){return this->RID;}$/;"	f	class:ResourceControlBlock
+getStatus	resource.h	/^        int getStatus(){return status;}$/;"	f	class:ResourceControlBlock
+getWaitingList	resource.h	/^        list<PCB*> & getWaitingList(){return waitingList;}$/;"	f	class:ResourceControlBlock
+init	process.h	/^    init,$/;"	e	enum:Priority
+initList	manager.h	/^        list<PCB*> initList;$/;"	m	class:Manager
+k	resource.h	/^        int k;$/;"	m	class:ResourceControlBlock
+manager	manager.h	/^        static Manager* manager;$/;"	m	class:Manager
+manager	process.h	/^        Manager* manager;$/;"	m	class:ProcessingControlBlock
+memory	process.h	/^        int memory;$/;"	m	class:ProcessingControlBlock
+none	process.h	/^    none,$/;"	e	enum:ProcessState
+open_Files	process.h	/^        int open_Files;$/;"	m	class:ProcessingControlBlock
+parent	process.h	/^        PCB* parent;$/;"	m	class:ProcessingControlBlock
+priority	process.h	/^        Priority priority;$/;"	m	class:ProcessingControlBlock
+processes	manager.h	/^        list<PCB*> processes;$/;"	m	class:Manager
+ready	process.h	/^    ready,$/;"	e	enum:ProcessState
+readyList	process.h	/^        list<PCB*> & readyList;$/;"	m	class:ProcessingControlBlock
+resources	manager.h	/^        list<RCB*> resources;$/;"	m	class:Manager
+resources	process.h	/^        map<RCB*,int> resources;$/;"	m	class:ProcessingControlBlock
+running	process.h	/^    running,$/;"	e	enum:ProcessState
+runningProcess	manager.h	/^        PCB* runningProcess;$/;"	m	class:Manager
+setChildren	process.h	/^        void setChildren(PCB* children){this->children.push_back(children);}$/;"	f	class:ProcessingControlBlock
+setManager	process.h	/^        void setManager(Manager* manager){this->manager = manager;}$/;"	f	class:ProcessingControlBlock
+setParent	process.h	/^        void setParent(PCB* parent){this->parent = parent;}$/;"	f	class:ProcessingControlBlock
+setStatus	resource.h	/^        void setStatus(int status){this->status = status;}$/;"	f	class:ResourceControlBlock
+status	resource.h	/^        int status;$/;"	m	class:ResourceControlBlock
+system	process.h	/^    system$/;"	e	enum:Priority
+systemList	manager.h	/^        list<PCB*> systemList;$/;"	m	class:Manager
+type	process.h	/^        PS type;$/;"	m	class:ProcessingControlBlock
+user	process.h	/^    user,$/;"	e	enum:Priority
+userList	manager.h	/^        list<PCB*> userList;$/;"	m	class:Manager
+waitingList	resource.h	/^        list<pair<PCB*,int> > waitingList;$/;"	m	class:ResourceControlBlock

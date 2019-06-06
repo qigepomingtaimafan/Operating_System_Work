@@ -43,7 +43,8 @@ class Process
 
 class ProcessingControlBlock:public Process
 {
-    private:
+    public:
+        string name;
         int PID;
         int cpuState;
         int memory;
@@ -51,6 +52,8 @@ class ProcessingControlBlock:public Process
         map<RCB*,int> resources;
         PS type;
         RCB* blockList;
+        list<PCB*> & readyList;
+        list<PCB*> & RL; 
         PCB* parent;
         list<PCB* > children;
         Priority priority;
@@ -66,4 +69,6 @@ class ProcessingControlBlock:public Process
         PCB* getParent(){return parent;}
         void setParent(PCB* parent){this->parent = parent;}
         void setChildren(PCB* children){this->children.push_back(children);}
+        void Release(int rid);
+        void Scheduler();
 }
