@@ -1,10 +1,14 @@
-#include "resource.h"i
+#ifndef HEADER_PROCESS
+#define HEADER_PROCESS
+
+#include "priority.h"
+#include "resource.h"
 #include "manager.h"
 #include <string>
 #include <vector>
 #include <list>
 #include <map>
-#include <pair>
+#include <utility>
 //------------------------------------------
 using std::string;
 using std::vector;
@@ -12,36 +16,17 @@ using std::list;
 using std::pair;
 using std::map;
 //------------------------------------------
-enum ProcessState
+enum PS
 {
     none,
     ready,
     running,
     blocked
 };
-enum Priority
-{
-    init,
-    user,
-    system
-};
 //------------------------------------------
-typedef ProcessState PS;
-typedef ProcessingControlBlock PCB;
-//------------------------------------------
-class Process
-{
-    public:
-        Process();
-        void Create();
-        void destroy();
-        void Request();
-        void Release();
-        void Time_out();
-        void Dispatch(bool toReady);
-}
-
-class ProcessingControlBlock:public Process
+class RCB;
+class Manager;
+class PCB
 {
     public:
         string name;
@@ -52,14 +37,14 @@ class ProcessingControlBlock:public Process
         map<RCB*,int> resources;
         PS type;
         RCB* blockList;
-        list<PCB*> & readyList;
-        list<PCB*> & RL; 
+        list<PCB*> * readyList;
+        list<PCB*> * RL; 
         PCB* parent;
         list<PCB* > children;
         Priority priority;
         Manager* manager;
     public:
-        ProcessingControlBlock(int PID,Priority priority);
+        PCB(int PID,Priority priority);
         void Link(PCB* parent);
         void KillTree();
         void Request(int rid);
@@ -70,5 +55,8 @@ class ProcessingControlBlock:public Process
         void setParent(PCB* parent){this->parent = parent;}
         void setChildren(PCB* children){this->children.push_back(children);}
         void Release(int rid);
+        void Release(int rid,int n);
         void Scheduler();
-}
+};
+//------------------------------------------
+#endif

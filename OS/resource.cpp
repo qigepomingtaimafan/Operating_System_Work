@@ -4,19 +4,21 @@
 //--------------------------------
 using std::list;
 //--------------------------------
-void ResourceControlBlock::DeleteProcess(int PID)
+void RCB::DeleteProcess(int PID)
 {
-    list<PCB* >::iterator iter;
+    list<pair<PCB*,int> >::iterator iter;
     for(iter = waitingList.begin();iter != waitingList.end();iter++)
     {
-        if (*iter->getPID() == PID)
+        pair<PCB*,int> p = *iter;
+        if (p.first->PID == PID)
         {
             waitingList.erase(iter);    
         }
     }
 }
 
-void ResourceControlBlock::InsertProcess(PCB* pcb)
+/*void RCB::InsertProcess(PCB* pcb)
 {
-    waitingList.push_back(pcb);
+    waitingList.push_back());
 }
+*/

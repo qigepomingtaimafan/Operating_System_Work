@@ -1,14 +1,23 @@
+#ifndef HEADER_MANAGER
+#define HEADER_MANAGER
+
+#include "priority.h"
 #include "process.h"
 #include "resource.h"
 #include <list>
 #include <queue>
 #include <vector>
 #include <iostream>
+#include <fstream>
 //------------------------------
 using std::string;
 using std::vector;
 using std::list;
+using std::ifstream;
+using std::ofstream;
 //------------------------------
+class RCB;
+class PCB;
 class Manager
 {
     public:
@@ -17,24 +26,21 @@ class Manager
         list<PCB*> initList;
         PCB* runningProcess;
         string releaseName;
-    private:
         list<RCB*> resources;
         list<PCB*> processes;
-        Manager();
-        static Manager* manager;
-        istream *in;
-        ostream *out;
-        unsigned int line;
+    private:
+        ifstream in;
+        ofstream out;
+        int line;
+        bool terminal;
     public:
         PCB* CreateProcess(int PID,Priority priority);
         void DestroyProcess(int PID);
         void RemoveProcess(Priority priority,PCB* pcb);
         void InsertProcess(Priority priority,PCB* pcb);
-        static Manager* getInstance();
-        RCB* Get_RCB(int rid);
         PCB* FetchPCB(int pid);
         RCB* FetchRCB(int rid);
-        RCB* FetchRCB(sting name);
+        RCB* FetchRCB(string name);
         void Init();
         void Cr(string x,Priority priority);
         void List(string option);
@@ -44,6 +50,10 @@ class Manager
         void SwitchInOut(string option);
         void PrintLineNum();
         void Time_out();
-        void Preempt();
+        void Preempt(PCB* p);
         void Scheduler();
-}
+        void PrintString(string s);
+        void Error(int n);
+};
+
+#endif

@@ -1,9 +1,10 @@
 #include "resource.h"
 #include "manager.h"
 #include "process.h"
+#include "priority.h"
 #include <list>
 #include <map>
-#include <pair>
+#include <utility>
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -12,47 +13,48 @@ using std::list;
 using std::map;
 using std::pair;
 using std::string;
-using std::ios::ifsteam;
-using std::ios::ofstream;
+using std::ifstream;
+using std::ofstream;
 using std::cout;
 using std::cin;
+using std::endl;
 //--------------------------------
-Manager* Manager::getManager()
+void Manager::PrintString(string s)
 {
-    if(manager == NULL)
+    if(terminal)
     {
-        manager = new Manager();
+        cout<<s;
+        cout<<"--------------------------------------"<<endl;
     }
-    return manager;
+    else
+    {
+        out<<"Line "<<std::to_string(line)<<":"<<endl;
+        out<<s;
+        out<<"--------------------------------------"<<endl;
+    }
 }
 
 void Manager::DestroyProcess(int PID)
 {
-    PCB* P = FetchPCB(PID);
+    PCB* p = FetchPCB(PID);
     if(p != NULL)
     {
-        p->Kill_Tree();
-        processes.erase(processes.find(p));
+        p->KillTree();
+        list<PCB*>::iterator iter = processes.begin();
+        for(;iter != processes.end();iter++)
+        {
+            if((*iter) == p)
+            {
+                processes.erase(iter);
+                break;
+            }
+        }
     }
     else
     {
         Error(1);
     }
     Scheduler();
-}
-
-RCB* Manager::Get_RCB(int rid)
-{
-    vector<RCB*>::iterator iter;
-    for (iter = resources.begin();iter != resources.end();iter++)
-    {
-        if(*iter == NULL)
-            continue;
-        if(*iter->getRID() == rid)
-        {
-            return *iter;
-        }
-    }
 }
 
 PCB* Manager::CreateProcess(int PID,Priority priority)
@@ -66,52 +68,53 @@ PCB* Manager::CreateProcess(int PID,Priority priority)
         case init:
         {
             initList.push_back(pcb);
-            pcb->RL = initList;
+            pcb->RL = &initList;
             break;
         }
-        case system:
+        case system_:
         {
             systemList.push_back(pcb);
-            pcb->RL = systemList;
+            pcb->RL = &systemList;
             break;
         }
         case user:
         {
             userList.push_back(pcb);
-            pcb->RL = userList;
+            pcb->RL = &userList;
             break;
         }
     }
     Scheduler();
+    return pcb;
 }
 
 void Manager::RemoveProcess(Priority priority,PCB* pcb)
 {
-    list<PCB*> & l;
+    list<PCB*> * l;
     switch(priority)
     {
         case init:
         {
-            l = initList;
+            l = &initList;
             break;
         }
-        case system:
+        case system_:
         {
-            l = systemList;
+            l = &systemList;
             break;
         }
         case user:
         {
-            l = userList;
+            l = &userList;
             break;
         }
     }
     list<PCB*>::iterator iter;
-    for (iter = l.begin();iter != l.end();iter++)
+    for (iter = l->begin();iter != l->end();iter++)
     {
         if (*iter == pcb)
         {
-            l.erase(iter);
+            l->erase(iter);
             return ;
         }
     }
@@ -122,7 +125,7 @@ PCB* Manager::FetchPCB(int pid)
     list<PCB*>::iterator iter;
     for(iter = processes.begin(); iter != processes.end();iter++)
     {
-        if(*iter->PID == pid)
+        if((*iter)->PID == pid)
         {
             return *iter;
         }
@@ -136,7 +139,7 @@ RCB* Manager::FetchRCB(int rid)
     list<RCB*>::iterator iter;
     for(iter = resources.begin(); iter != resources.end();iter++)
     {
-        if(*iter->RID == rid)
+        if((*iter)->RID == rid)
         {
             return *iter;
         }
@@ -151,7 +154,7 @@ RCB* Manager::FetchRCB(string name)
     list<RCB*>::iterator iter;
     for(iter = resources.begin(); iter != resources.end();iter++)
     {
-        if(*iter->name == name)
+        if((*iter)->name == name)
         {
             return *iter;
         }
@@ -163,26 +166,26 @@ RCB* Manager::FetchRCB(string name)
 void Manager::InsertProcess(Priority priority,PCB* pcb)
 {
     
-    list<PCB*> & l;
+    list<PCB*> * l;
     switch(priority)
     {
         case init:
         {
-            l = initList;
+            l = &initList;
             break;
         }
-        case system:
+        case system_:
         {
-            l = systemList;
+            l = &systemList;
             break;
         }
         case user:
         {
-            l = userList;
+            l = &userList;
             break;
         }
     }
-    l.push_back(pcb);
+    l->push_back(pcb);
 }
 
 void Manager::Init()
@@ -194,7 +197,7 @@ void Manager::Init()
         RCB* tmp = new RCB(i+1,i+1);
         int n = i+1;
         tmp->name = "R" + std::to_string(n);
-        sources.push_back(tmp);
+        resources.push_back(tmp);
     }
 }
 void Manager::Cr(string x,Priority priority)
@@ -202,96 +205,87 @@ void Manager::Cr(string x,Priority priority)
     CreateProcess(processes.size(),priority);
 }
 
-void Manager::List(string option);
+void Manager::List(string option)
 {
+    string buf = "";
     if(option == "ready")
     {
-        PrintLineNum();
-        *out<<"2: ";
         list<PCB*>::iterator iter;
         for(iter = systemList.begin();iter != systemList.end();iter++)
         {
             if(iter != systemList.begin())
-                *out<<"--"
-            *out<<*iter->name;
+                buf += "--";
+            buf += (*iter)->name;
         }
-        *out<<endl;
-        *out<<"\t1:";
+        buf += "\n";
+        buf += "1:";
         for(iter = userList.begin();iter != userList.end();iter++)
         {
             if(iter != userList.begin())
-                *out<<"--"
-            *out<<*iter->name;
+                buf += "--";
+            buf += (*iter)->name;
         }
-        *out<<endl;
-        *out<<"\t0:";
+        buf += "\n";
+        buf += "0:";
         for(iter = initList.begin();iter != initList.end();iter++)
         {
             if(iter != initList.begin())
-                *out<<"--"
-            *out<<*iter->name;
+                buf += "--";
+            buf += (*iter)->name;
         }
-        *out<<endl;
+        buf += "\n";
     }
     else if(option == "res")
     {
-        PrintLineNum();
         list<RCB*>::iterator iter;
         for(iter = resources.begin();iter != resources.end();iter++)
         {
-            if(iter != resource.begin())
-                *out<<"\t";
-            *out<<*iter->name<<"  "<<*iter->status<<endl;
+            buf = buf + (*iter)->name +"  " + std::to_string((*iter)->status)+ "\n";
         }
     
     }
     else if(option == "block")
     {
-        PrintLineNum();
         list<RCB*>::iterator iter;
         for(iter = resources.begin();iter != resources.end();iter++)
         {
-            if (iter != resources.begin())
-                *out<<"\t";
-            *out<<*iter->name<<" ";
+            buf += (*iter)->name;
+            buf += " ";
             list<pair<PCB*,int> >::iterator iterp;
-            for(iterp = *iter->waitingList.begin();iterp != *iter->waitingList.end();iterp++)
+            for(iterp = (*iter)->waitingList.begin();iterp != (*iter)->waitingList.end();iterp++)
             {
-                *out<<*iterp.first->name<<" ";
+                buf += (*iterp).first->name;
+                buf += " ";
             }
-            *out<<endl;
+            buf += "\n";
         }
     }
     else
     {
-        PrintLineNum();
-        *cout<<"Invalid word after \"list\""<<option<<endl;
+        buf = buf += "Invalid word after \"list\"\n";
     }
+    PrintString(buf);
 }
 
-void To()
+void Manager::To()
 {
     Time_out();
 }
 
-void Req(string name,int n)
+void Manager::Req(string name,int n)
 {
-    runningProcess(FetchRCB(name)->RID,n);
-    PrintLineNum();
-    *out<<"process "<<runningProcess->name<<"requests "<<n<<" "<<name<<endl;
+    string buf = "";
+    runningProcess->Request(FetchRCB(name)->RID,n);
+    buf = buf + "process "+ runningProcess->name + "requests " + std::to_string(n) + "\n";
+    PrintString(buf);
 }
 
-void De(string name)
+void Manager::De(string name)
 {
-    PrintLineNum();
-    *out<<"release "<<releaseName<<" .wake up process"<<runningProcess->name<<endl;
+    string buf = "";
+    buf += "release " + releaseName + " .wake up process" + runningProcess->name + "\n";
+    PrintString(buf);
 }
-
-void PrintLineNum()
-{
-    *out<<"("<<line<<")"<<"\t";    
-}
-
 
 void Manager::Scheduler()
 {
@@ -328,9 +322,10 @@ void Manager::Scheduler()
 
 void Manager::Preempt(PCB* p)
 {
-    P->status = running;
-    PrintLineNum();
-    *out<<"process "<<p->name<<" is running,";
+    p->type = running;
+    string buf = "";
+    buf = "process " + p->name + " is running";
+    PrintString(buf);
 }
 
 void Manager::Time_out()
@@ -340,25 +335,49 @@ void Manager::Time_out()
     q->type = ready;
     InsertProcess(q->priority,q);
     Scheduler();
-    *out<<", process "<<q->name <<"is ready"<<endl;
+    string buf = "";
+    buf = ", pricess " + q->name + "is ready" + "\n";
+    PrintString(buf);
 }
 
 void Manager::SwitchInOut(string option)
 {
     if(option == "file")
     {
-        ofstream* o = new ofsteam();
-        out = o;
-        ifstream* i = new ifsteam();
-        in = i;
-        cout<<"File I\/O mode.Input at in.txt.Output at out.txt"<<endl;
+        terminal = false;
+        in.open("in.txt",std::ios::in);
+        if(!in.is_open())
+        {
+            cout<<"File in.txt is not exist or no permisson."<<endl;
+            cout<<"--------------------------------------"<<endl;
+        }
+        out.open("out.txt",std::ios::out);
+        cout<<"File I/O mode.Input at in.txt.Output at out.txt"<<endl;
+        cout<<"--------------------------------------"<<endl;
     }
     else if(option == "terminal")
     {
-        cout* o = new cout();
-        out = o;
-        cin* i = new cin();
-        in = i;
-        cout<<"Terminal I\/O mode.Input and output will be fromterminal"<<endl;
+        terminal = true;
+        cout<<"--------------------------------------"<<endl;
+        cout<<"Terminal I/O mode.Input and output will be fromterminal"<<endl;
+    }
+    else 
+    {
+        cout<<"Please input vaild word : file or terminal";
+        cout<<"--------------------------------------"<<endl;
+    }
+}
+
+void Manager::Error(int n)
+{
+    string buf;
+    switch(n)
+    {
+        case 2:
+        {
+            buf += "beyond the resource num";
+            PrintString(buf);
+            break;
+        }
     }
 }
