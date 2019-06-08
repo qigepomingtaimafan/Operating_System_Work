@@ -28,17 +28,17 @@ class Manager
         string releaseName;
         list<RCB*> resources;
         list<PCB*> processes;
-    private:
+        bool terminal;
         ifstream in;
         ofstream out;
         int line;
-        bool terminal;
     public:
-        PCB* CreateProcess(int PID,Priority priority);
+        PCB* CreateProcess(int PID,Priority priority,string name);
         void DestroyProcess(int PID);
         void RemoveProcess(Priority priority,PCB* pcb);
         void InsertProcess(Priority priority,PCB* pcb);
         PCB* FetchPCB(int pid);
+        PCB* FetchPCB(string name);
         RCB* FetchRCB(int rid);
         RCB* FetchRCB(string name);
         void Init();
@@ -47,7 +47,7 @@ class Manager
         void To();
         void Req(string name,int n);
         void De(string name);
-        void SwitchInOut(string option);
+        bool SwitchInOut(string option);
         void PrintLineNum();
         void Time_out();
         void Preempt(PCB* p);

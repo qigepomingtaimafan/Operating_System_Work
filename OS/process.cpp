@@ -52,13 +52,14 @@ void PCB::KillTree()
     delete this;
 }
 
-void PCB::Request(int rid)
+bool PCB::Request(int rid)
 {
     RCB* r = getManager()->FetchRCB(rid);
     if (r->status == 1)
     {
         r->status = 0;
         resources[r] = 1;
+        return true;
     }
     else
     {
@@ -69,11 +70,14 @@ void PCB::Request(int rid)
         pair<PCB*,int> p(this,1);
         r->waitingList.push_back(p);
         getManager()->Scheduler();
+        string buf = "process "+ this->name + " is blocked\n";
+        getManager()->PrintString(buf);
+        return false;
     }
 
 }
 
-void PCB::Request(int rid,int n)
+bool PCB::Request(int rid,int n)
 {
     RCB* r = getManager()->FetchRCB(rid);
     if (r->status >= n)
@@ -90,13 +94,14 @@ void PCB::Request(int rid,int n)
             j += n;
             resources[r] = j;
         }
+        return true;
     }
     else
     {
         if (n > r->k)
         {
             getManager()->Error(2);
-            return;
+            return false;
         }
         type = blocked;
         blockList = r;
@@ -105,6 +110,9 @@ void PCB::Request(int rid,int n)
         pair<PCB* ,int> p(this,n);  
         r->waitingList.push_back(p);
         getManager()->Scheduler();
+        string buf = "process "+ this->name + " is blocked\n";
+        getManager()->PrintString(buf);
+        return false;
     }
 }
 
@@ -130,7 +138,9 @@ void PCB::Release(int rid)
         q->blockList = NULL;
         q->resources[r] = 1;
         q->readyList->push_back(q);
+        string buf = "wake up process " + q->name +"\n";
         getManager()->Scheduler();
+        getManager()->PrintString(buf);
     }
 }
 
@@ -140,6 +150,7 @@ void PCB::Release(int rid,int n)
     r->status = r->status+n;
     resources.erase(resources.find(r));
     list<pair<PCB*,int> >::iterator iter = r->waitingList.begin();
+    string buf = "";
     while(r->waitingList.size() !=0 && r->status >= (*iter).second)
     {
         r->status = r->status - (*iter).second;
@@ -148,6 +159,7 @@ void PCB::Release(int rid,int n)
         q->type = ready;
         q->readyList = RL;
         q->blockList = NULL;
+        buf += "wake up process " + q->name +"\n";
         if(q->resources.find(r) != q->resources.end())
         {
             int j = resources[r];
@@ -160,5 +172,7 @@ void PCB::Release(int rid,int n)
         q->readyList->push_back(q);
     }
     getManager()->Scheduler();
+    if(buf != "")
+        getManager()->PrintString(buf);
 }
 

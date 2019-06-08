@@ -57,12 +57,15 @@ void Manager::DestroyProcess(int PID)
     Scheduler();
 }
 
-PCB* Manager::CreateProcess(int PID,Priority priority)
+PCB* Manager::CreateProcess(int PID,Priority priority,string name)
 {
     PCB* pcb = new PCB(PID,priority);
     pcb->parent = runningProcess;
+    pcb->name = name;
     pcb->setManager(this);
-    runningProcess->children.push_back(pcb);
+    processes.push_back(pcb);
+    if(priority != init)
+        runningProcess->children.push_back(pcb);
     switch(priority)
     {
         case init:
@@ -134,6 +137,20 @@ PCB* Manager::FetchPCB(int pid)
     return NULL;
 }
 
+PCB* Manager::FetchPCB(string name)
+{
+    list<PCB*>::iterator iter;
+    for(iter = processes.begin(); iter != processes.end();iter++)
+    {
+        if((*iter)->name == name)
+        {
+            return *iter;
+        }
+
+    }
+    return NULL;
+}
+
 RCB* Manager::FetchRCB(int rid)
 {
     list<RCB*>::iterator iter;
@@ -190,8 +207,7 @@ void Manager::InsertProcess(Priority priority,PCB* pcb)
 
 void Manager::Init()
 {
-    PCB* initTmp = CreateProcess(0,init);
-    initTmp->name = "init";
+    PCB* initTmp = CreateProcess(0,init,"init");
     for (int i =0;i<4;i++)
     {
         RCB* tmp = new RCB(i+1,i+1);
@@ -199,10 +215,15 @@ void Manager::Init()
         tmp->name = "R" + std::to_string(n);
         resources.push_back(tmp);
     }
+    processes.push_back(initTmp);
 }
 void Manager::Cr(string x,Priority priority)
 {
-    CreateProcess(processes.size(),priority);
+    PCB* run = runningProcess;
+    CreateProcess(processes.size(),priority,x);
+    string buf = "process " + runningProcess->name + " is running\n";
+    if(run->PID == runningProcess->PID)
+        PrintString(buf);
 }
 
 void Manager::List(string option)
@@ -211,6 +232,7 @@ void Manager::List(string option)
     if(option == "ready")
     {
         list<PCB*>::iterator iter;
+        buf += "2:"; 
         for(iter = systemList.begin();iter != systemList.end();iter++)
         {
             if(iter != systemList.begin())
@@ -275,15 +297,23 @@ void Manager::To()
 void Manager::Req(string name,int n)
 {
     string buf = "";
-    runningProcess->Request(FetchRCB(name)->RID,n);
-    buf = buf + "process "+ runningProcess->name + "requests " + std::to_string(n) + "\n";
-    PrintString(buf);
+    if(runningProcess->Request(FetchRCB(name)->RID,n))
+    {
+        buf = buf + "process "+ runningProcess->name + " requests " + std::to_string(n) +" " +name + "\n";
+        PrintString(buf);
+    }
 }
 
 void Manager::De(string name)
 {
     string buf = "";
-    buf += "release " + releaseName + " .wake up process" + runningProcess->name + "\n";
+    PCB* pcb = FetchPCB(name);
+    map<RCB*,int>::iterator iter;
+    for(iter = pcb->resources.begin();iter != pcb->resources.end();iter++)
+    {
+        buf += "release " + (*iter).first->name + "\n";
+    }
+    DestroyProcess(pcb->PID);
     PrintString(buf);
 }
 
@@ -317,6 +347,10 @@ void Manager::Scheduler()
     if ( pcb == NULL || pcb->priority < p->priority || pcb->type != running )
     {
         Preempt(p);
+        if(pcb && pcb != p) 
+        {
+            pcb->type = ready;
+        }
     }
 }
 
@@ -324,7 +358,9 @@ void Manager::Preempt(PCB* p)
 {
     p->type = running;
     string buf = "";
-    buf = "process " + p->name + " is running";
+    buf = "process " + p->name + " is running\n";
+    runningProcess = p;
+    RemoveProcess(p->priority,p);
     PrintString(buf);
 }
 
@@ -335,12 +371,15 @@ void Manager::Time_out()
     q->type = ready;
     InsertProcess(q->priority,q);
     Scheduler();
-    string buf = "";
-    buf = ", pricess " + q->name + "is ready" + "\n";
-    PrintString(buf);
+    if(q != runningProcess)
+    {
+        string buf = "";
+        buf = "process " + q->name + " is ready" + "\n";
+        PrintString(buf);
+    }
 }
 
-void Manager::SwitchInOut(string option)
+bool Manager::SwitchInOut(string option)
 {
     if(option == "file")
     {
@@ -348,23 +387,30 @@ void Manager::SwitchInOut(string option)
         in.open("in.txt",std::ios::in);
         if(!in.is_open())
         {
+            cout<<"--------------------------------------"<<endl;
             cout<<"File in.txt is not exist or no permisson."<<endl;
             cout<<"--------------------------------------"<<endl;
+            return false;
         }
         out.open("out.txt",std::ios::out);
         cout<<"File I/O mode.Input at in.txt.Output at out.txt"<<endl;
         cout<<"--------------------------------------"<<endl;
+        return true;
     }
     else if(option == "terminal")
     {
         terminal = true;
         cout<<"--------------------------------------"<<endl;
         cout<<"Terminal I/O mode.Input and output will be fromterminal"<<endl;
+        cout<<"--------------------------------------"<<endl;
+        return true;
     }
     else 
     {
-        cout<<"Please input vaild word : file or terminal";
         cout<<"--------------------------------------"<<endl;
+        cout<<"Please input vaild word : file or terminal"<<endl;
+        cout<<"--------------------------------------"<<endl;
+        return false;
     }
 }
 
@@ -375,7 +421,13 @@ void Manager::Error(int n)
     {
         case 2:
         {
-            buf += "beyond the resource num";
+            buf += "beyond the resource num\n";
+            PrintString(buf);
+            break;
+        }
+        case 3:
+        {
+            buf += "Iligal command\n";
             PrintString(buf);
             break;
         }

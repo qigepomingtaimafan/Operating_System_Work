@@ -47,8 +47,8 @@ class PCB
         PCB(int PID,Priority priority);
         void Link(PCB* parent);
         void KillTree();
-        void Request(int rid);
-        void Request(int rid,int n);
+        bool Request(int rid);
+        bool Request(int rid,int n);
         void setManager(Manager* manager){this->manager = manager;}
         Manager* getManager(){return manager;}
         PCB* getParent(){return parent;}
