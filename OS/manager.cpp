@@ -248,7 +248,7 @@ void Manager::List(string option)
             buf += (*iter)->name;
         }
         buf += "\n";
-        buf += "0:";
+        buf += "0:init";
         for(iter = initList.begin();iter != initList.end();iter++)
         {
             if(iter != initList.begin())

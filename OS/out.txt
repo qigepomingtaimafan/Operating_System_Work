@@ -16,7 +16,7 @@ process x is running
 Line 6:
 2:
 1:p--q--r
-0:
+0:init
 --------------------------------------
 Line 7:
 process p is running

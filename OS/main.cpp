@@ -17,25 +17,22 @@ int main()
     cout<<"Shell Begin"<<endl;
     cout<<"Input q to exit"<<endl;
     cout<<"--------------------------------------"<<endl;
-/*    while (1)
+    while (1)
     {
         cout<<"-> ";
         cin>>buf;
         if(buf == "q")
         {
-            cout<<"--------------------------------------"<<endl;
             cout<<"Shell Quit"<<endl;
             cout<<"--------------------------------------"<<endl;
             return 0;
         }
         if(manager->SwitchInOut(buf))
             break;
-    }*/
-    manager->terminal = false;
+    }
     if(manager->terminal)
     {
         TerminalFlow(manager);
-        cout<<"--------------------------------------"<<endl;
         cout<<"Shell Quit"<<endl;
         cout<<"--------------------------------------"<<endl;
         return 0;
@@ -43,7 +40,6 @@ int main()
     else 
     {
         FileFlow(manager);
-        cout<<"--------------------------------------"<<endl;
         cout<<"Shell Quit"<<endl;
         cout<<"--------------------------------------"<<endl;
         return 0;
@@ -59,7 +55,6 @@ void FileFlow(Manager* manager)
     string buf2;
     bool quit = false;
     int option = 0;
-    manager->SwitchInOut("file");
     while(!quit)
     {
         buf = "";
@@ -83,7 +78,9 @@ void FileFlow(Manager* manager)
         else if(buf == "q")
             option = 7;
         else if(buf == "\n")
-            continue;
+            break;
+        else if(buf == "")
+            break;
             
         switch(option)
         {
@@ -255,6 +252,5 @@ void TerminalFlow(Manager* manager)
                 break;
             }
         }
-        cout<<endl;
     }
 }
